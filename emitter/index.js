@@ -1,13 +1,13 @@
 const valueReader = require('./valueReader.js');
-const EmitterMqttClient = require('./emitterMqttClient')
+const EmitterMqttClient = require('./emitterMqttClient');
 
-/**
- * @type {EmitterMqttClient}
- */
-var client;
-const clientId = process.env.CLIENTID;
-
+/** @type {EmitterMqttClient} */
+let client;
 let intervalId;
+
+const clientId = process.env.CLIENTID;
+console.log(`clientId: ${clientId}`);
+
 
 function startApp(){
     client = new EmitterMqttClient(clientId);

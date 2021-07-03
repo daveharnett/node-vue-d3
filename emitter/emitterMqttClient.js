@@ -34,7 +34,7 @@ module.exports = class EmitterMqttClient extends EventEmitter {
         
         this.#client.on('message',(topic, message)=> this.#onMessageReceived(topic, message.toString()));    
 
-    }
+    };
 
     send(val, callback){
         this.#client.publish(
@@ -46,14 +46,14 @@ module.exports = class EmitterMqttClient extends EventEmitter {
             }), 
             {}, 
             callback);
-    }
+    };
 
     /**
      * Handle incoming messages.
      * @param {string} topic 
      * @param {string} message 
      */
-    #onMessageReceived(topic, message){
+    #onMessageReceived = function(topic, message){
         if (topic == `commands/${this.clientId}`){
             console.log(`Command received: ${message}`);
             if (message == 'restart'){
@@ -69,7 +69,7 @@ module.exports = class EmitterMqttClient extends EventEmitter {
      * Fired when the client connects.
      * @param {mqtt.MqttClient} client 
      */
-    #onConnect(client){
+    #onConnect = function(client){
         // register this client as 'up'.
         client.publish(`emitterStatus/${this.clientId}`, '1', {
             retain: true,
@@ -81,7 +81,7 @@ module.exports = class EmitterMqttClient extends EventEmitter {
      * Fired when the client is (not deliberately) disconnected.
      * @param {mqtt.MqttClient} client 
      */
-    #onDisconnect(client){
+    #onDisconnect = function(client){
         if (!client.reconnecting) client.reconnect();
     }
 

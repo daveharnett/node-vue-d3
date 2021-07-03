@@ -7,10 +7,12 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server);
 
-const {MqttClient} = require ('./mqttClient.js');
+const MqttClient = require ('./mqttClient.js');
 const emitterClient = new MqttClient();
 
 app.use(logger('dev'));

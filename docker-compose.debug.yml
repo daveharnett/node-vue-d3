@@ -1,15 +1,38 @@
 version: '3.4'
 
 services:
-  frontend:
-    image: frontend
+  # frontend:
+  #   image: frontend
+  #   build:
+  #     context: frontend
+  #     dockerfile: ./Dockerfile
+  #   environment:
+  #     NODE_ENV: development
+  #     PORT: 3000
+  #   ports:
+  #     - 3000:3000
+  #     - 9229:9229
+  #   command: ["node", "--inspect=0.0.0.0:9229", "./bin/www"]
+  emitter-limerick:
+    image: emitter
     build:
-      context: frontend
+      context: emitter
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: development
-      PORT: 3000
+      CLIENTID: Limerick
     ports:
-      - 3000:3000
       - 9229:9229
-    command: ["node", "--inspect=0.0.0.0:9229", "./bin/www"]
+    command: ["node", "--inspect=0.0.0.0:9229", "index.js"]
+  emitter-cork:
+    image: emitter
+    build:
+      context: emitter
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: development
+      CLIENTID: Cork
+    ports:
+      - 9230:9229
+    command: ["node", "--inspect=0.0.0.0:9229", "index.js"]
+    
