@@ -5,11 +5,12 @@ const EmitterMqttClient = require('./emitterMqttClient')
  * @type {EmitterMqttClient}
  */
 var client;
+const clientId = process.env.CLIENTID;
 
 let intervalId;
 
 function startApp(){
-    client = new EmitterMqttClient('limerick')
+    client = new EmitterMqttClient(clientId);
     client.on('restart', function () {
             stopSending();
             startApp();

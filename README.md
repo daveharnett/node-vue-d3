@@ -1,0 +1,1 @@
+A demonstration of a d3/vue frontend with mqtt-brokered data sources and nodejs server.
