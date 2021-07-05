@@ -7,6 +7,9 @@
 var app = require('../app');
 var debug = require('debug')('frontend:server');
 var http = require('http');
+const { Server } = require('socket.io');
+const MqttClient = require ('../mqttClient.js');
+const EventBroker = require('../eventBroker.js');
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +23,30 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+/**
+ * setup socket.io for realtime client-server websocket comms.
+ */
+const io = new Server(server);
+
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
+
+
+/**
+ * Create MQTT Client
+ */
+const mqttClient = new MqttClient();
+
+
+/**
+ * Create broker to pass events between clients and mqtt
+ */
+const broker = new EventBroker(io, mqttClient);
+
+
+
 
 /**
  * Listen on provided port, on all network interfaces.

@@ -1,18 +1,22 @@
 version: '3.4'
 
 services:
-  # frontend:
-  #   image: frontend
-  #   build:
-  #     context: frontend
-  #     dockerfile: ./Dockerfile
-  #   environment:
-  #     NODE_ENV: development
-  #     PORT: 3000
-  #   ports:
-  #     - 3000:3000
-  #     - 9229:9229
-  #   command: ["node", "--inspect=0.0.0.0:9229", "./bin/www"]
+  frontend:
+    image: frontend
+    build:
+      context: frontend
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: development
+      MQTT_HOST: mqtt://mosquitto:1883
+      PORT: 3000
+    ports:
+      - 3000:3000
+      - 9229:9229
+    command: ["node", "--inspect=0.0.0.0:9229", "./bin/www"]
+    depends_on:
+      - mosquitto
+      
   emitter-limerick:
     image: emitter
     build:
@@ -20,10 +24,13 @@ services:
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: development
+      MQTT_HOST: mqtt://mosquitto:1883
       CLIENTID: Limerick
     ports:
-      - 9229:9229
+      - 9230:9229
     command: ["node", "--inspect=0.0.0.0:9229", "index.js"]
+    depends_on:
+      - mosquitto
   emitter-cork:
     image: emitter
     build:
@@ -31,8 +38,41 @@ services:
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: development
+      MQTT_HOST: mqtt://mosquitto:1883
       CLIENTID: Cork
     ports:
-      - 9230:9229
+      - 9231:9229
     command: ["node", "--inspect=0.0.0.0:9229", "index.js"]
+    depends_on:
+      - mosquitto
+  emitter-galway:
+    image: emitter
+    build:
+      context: emitter
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: development
+      MQTT_HOST: mqtt://mosquitto:1883
+      CLIENTID: Galway
+    ports:
+      - 9232:9229
+    command: ["node", "--inspect=0.0.0.0:9229", "index.js"]
+    depends_on:
+      - mosquitto
+
+  mosquitto:
+    image: eclipse-mosquitto:1.6.15
+    ports:
+      - 1883:1883
+      - 8883:8883
+    volumes:
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/logs
+      - mosquitto-conf:/mosquitto/config
+    restart: unless-stopped
+
+volumes:
+  mosquitto-data:
+  mosquitto-logs:
+  mosquitto-conf:
     

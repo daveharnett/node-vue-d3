@@ -1,16 +1,21 @@
 version: '3.4'
 
 services:
-  # frontend:
-    # image: frontend
-    # build:
-    #   context: frontend
-    #   dockerfile: ./Dockerfile
-    # environment:
-    #   NODE_ENV: production
-    #   PORT:3000
-    # ports:
-    #   - 3000:3000
+  frontend:
+    image: frontend
+    build:
+      context: frontend
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+      MQTT_HOST: mqtt://mosquitto:1883
+      PORT: 3000
+    ports:
+      - 3000:3000
+    command: ["node", "./bin/www"]
+    depends_on:
+      - mosquitto
+  
   emitter-limerick:
     image: emitter
     build:
@@ -18,7 +23,12 @@ services:
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: production
+      MQTT_HOST: mqtt://mosquitto:1883
       CLIENTID: Limerick
+    command: ["node", "index.js"]
+    depends_on:
+      - mosquitto
+  
   emitter-cork:
     image: emitter
     build:
@@ -26,4 +36,38 @@ services:
       dockerfile: ./Dockerfile
     environment:
       NODE_ENV: production
+      MQTT_HOST: mqtt://mosquitto:1883
       CLIENTID: Cork
+    command: ["node", "index.js"]
+    depends_on:
+      - mosquitto
+  
+  emitter-galway:
+    image: emitter
+    build:
+      context: emitter
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+      MQTT_HOST: mqtt://mosquitto:1883
+      CLIENTID: Galway
+    command: ["node", "index.js"]
+    depends_on:
+      - mosquitto
+
+  mosquitto:
+    image: eclipse-mosquitto:1.6.15
+    ports:
+      - 1883:1883
+      - 8883:8883
+    volumes:
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/logs
+      - mosquitto-conf:/mosquitto/config
+    restart: unless-stopped
+    
+volumes:
+  mosquitto-data:
+  mosquitto-logs:
+  mosquitto-conf:
+    

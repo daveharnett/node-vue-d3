@@ -1,6 +1,8 @@
 const mqtt = require('mqtt');
 const EventEmitter = require('events');
 
+const mqttBrokerUri = process.env.MQTT_HOST || 'mqtt://broker.hivemq.com:1883';
+
 
 module.exports = class EmitterMqttClient extends EventEmitter {
     
@@ -13,7 +15,7 @@ module.exports = class EmitterMqttClient extends EventEmitter {
     constructor(_clientId){
         super();
         this.clientId = _clientId;
-        this.#client = mqtt.connect('mqtt://broker.hivemq.com:1883',{
+        this.#client = mqtt.connect(mqttBrokerUri,{
             clientId: _clientId,
             // register this client as 'down'
             will: {

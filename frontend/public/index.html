@@ -1,22 +1,74 @@
-<html>
-
+<!doctype html>
+<html lang="en">
 <head>
   <title>Express</title>
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Load required Bootstrap and BootstrapVue CSS -->
+  <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+  <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+  <!-- Load polyfills to support older browsers -->
+  <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
+
+  <!-- Load Vue followed by BootstrapVue -->
+  <script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>
+  <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+
+  <!-- Load the following for BootstrapVueIcons support -->
+  <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://d3js.org/d3.v4.js"></script>
+
 </head>
 
 <body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
+  <div id="app">
+    {{ message }}
+  </div>
+
+  <div id="my_dataviz"></div>
 
 
 
 
 
 
-  <script src="/socket.io/socket.io.js"></script>
+
   <script>
     var socket = io();
+    var app = new Vue({
+      el: '#app',
+      data: {
+        message: 'Hello Vue!',
+        values: []
+      }
+    });
+
+    function makeToast(message) {
+      app.$bvToast.toast(message, {
+        title: 'BootstrapVue Toast',
+        autoHideDelay: 5000,
+        appendToast: false
+      });
+    }
+
+    socket.on('valueReceived', function(msg) {
+      app.values.push(msg);
+    });
+
+
+
+    // set the dimensions and margins of the graph
+    var margin = {top: 10, right: 30, bottom: 30, left: 60},
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    
+
+
   </script>
   
   </body>

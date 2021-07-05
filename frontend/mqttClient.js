@@ -1,6 +1,8 @@
 const mqtt = require('mqtt');
 const EventEmitter = require('events');
 
+const mqttBrokerUri = process.env.MQTT_HOST || 'mqtt://localhost:1883';
+
 /**
  * Wraps the native mqtt client.
  */
@@ -14,7 +16,7 @@ module.exports = class MqttClient extends EventEmitter {
  
      constructor(){
         super();
-        this.#client = mqtt.connect('mqtt://broker.hivemq.com:1883',{
+        this.#client = mqtt.connect(mqttBrokerUri,{
             clientId: this.clientId
         });
 
@@ -48,29 +50,29 @@ module.exports = class MqttClient extends EventEmitter {
      * @param {string} topic 
      * @param {string} message 
      */
-         #onMessageReceived(topic, message){
-            if (topic.indexOf('emitterValues') === 0){
-                const messageObject = JSON.parse(message);
-                console.log(`Received value: ${messageObject.value} from site ${messageObject.site}`);
-                this.emit('valueReceived', messageObject);
-            }
-            if (topic.indexOf('emitterStatus') === 0){
-                console.log(`Emitter Status: ${topic} : ${message}`);
-            }
+    #onMessageReceived = function(topic, message){
+        if (topic.indexOf('emitterValues') === 0){
+            const messageObject = JSON.parse(message);
+            console.log(`Received value: ${messageObject.value} from site ${messageObject.site}`);
+            this.emit('valueReceived', messageObject);
         }
+        if (topic.indexOf('emitterStatus') === 0){
+            console.log(`Emitter Status: ${topic} : ${message}`);
+        }
+    }
     
     /**
      * Fired when the client connects.
      * @param {mqtt.MqttClient} client 
      */
-    #onConnect(client){
+    #onConnect = function (client){
     }
 
     /**
      * Fired when the client is (not deliberately) disconnected.
      * @param {mqtt.MqttClient} client 
      */
-    #onDisconnect(client){
+    #onDisconnect = function(client){
         if (!client.reconnecting) client.reconnect();
     }
 
