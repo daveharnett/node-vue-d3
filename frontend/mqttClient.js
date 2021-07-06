@@ -1,7 +1,10 @@
 const mqtt = require('mqtt');
 const EventEmitter = require('events');
 
+const sitesRepository = require('./sitesRepository.js');
+
 const mqttBrokerUri = process.env.MQTT_HOST || 'mqtt://localhost:1883';
+
 
 /**
  * Wraps the native mqtt client.
@@ -36,6 +39,7 @@ module.exports = class MqttClient extends EventEmitter {
 
     }
 
+
     /**
      * Send a restart command to an emitter.
      * @param {string} clientId 
@@ -45,28 +49,34 @@ module.exports = class MqttClient extends EventEmitter {
         this.#client.publish(`commands/${clientId}`, commandType);
     }
 
+
     /**
      * Handle incoming messages.
      * @param {string} topic 
      * @param {string} message 
      */
     #onMessageReceived = function(topic, message){
-        if (topic.indexOf('emitterValues') === 0){
+        if (topic.startsWith('emitterValues')){
             const messageObject = JSON.parse(message);
-            console.log(`Received value: ${messageObject.value} from site ${messageObject.site}`);
+            //console.log(`Received value: ${messageObject.value} from site ${messageObject.site}`);
             this.emit('valueReceived', messageObject);
         }
-        if (topic.indexOf('emitterStatus') === 0){
-            console.log(`Emitter Status: ${topic} : ${message}`);
+        if (topic.startsWith('emitterStatus')){
+            const isUp = message === '1';
+            const siteName = topic.substring(topic.indexOf('/') + 1);
+            sitesRepository.updateSite(siteName, isUp);
+            //console.log(`Emitter Status: ${topic} : ${message}`);
         }
     }
     
+
     /**
      * Fired when the client connects.
      * @param {mqtt.MqttClient} client 
      */
     #onConnect = function (client){
     }
+
 
     /**
      * Fired when the client is (not deliberately) disconnected.

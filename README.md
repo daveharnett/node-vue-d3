@@ -2,6 +2,7 @@ A demonstration of a d3/vue frontend with mqtt-brokered data sources and nodejs 
 
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
+- [Testing](#testing)
 - [Remarks](#remarks)
 - [Done](#done)
 - [ToDo](#todo)
@@ -24,7 +25,8 @@ or for debug, run:
 > docker-compose -f "docker-compose.debug.yml" up -d --build 
 
 
-
+# Testing
+> npm run test
 
 
 # Remarks
