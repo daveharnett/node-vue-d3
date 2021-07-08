@@ -46,7 +46,7 @@ module.exports = class MqttClient extends EventEmitter {
      * @param {string} commandType 
      */
     sendRestartCommand(clientId){
-        this.#client.publish(`commands/${clientId}`, commandType);
+        this.#client.publish(`commands/${clientId}`, 'restart');
     }
 
 
@@ -65,7 +65,6 @@ module.exports = class MqttClient extends EventEmitter {
             const isUp = message === '1';
             const siteName = topic.substring(topic.indexOf('/') + 1);
             sitesRepository.updateSite(siteName, isUp);
-            //console.log(`Emitter Status: ${topic} : ${message}`);
         }
     }
     

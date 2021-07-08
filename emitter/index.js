@@ -21,6 +21,7 @@ function startApp(){
 function stopSending(){
     clearInterval(intervalId);
     intervalId = null;
+    client.sendDownStatusMessage();
 }
 
 function startSending(client){
@@ -35,7 +36,7 @@ function sendLatestValue(){
 }
 
 function failRandomly(){
-    if (Math.random()>0.999){
+    if (Math.random()>0.99){
         console.log('simulating failure');
         stopSending();
     }

@@ -26,7 +26,7 @@ module.exports = class EmitterMqttClient extends EventEmitter {
             }
         });
         this.#client.on('connect',()=>{
-            this.#onConnect(this.#client); 
+            this.sendUpStatusMessage(this.#client); 
             this.emit('connect');
         });
         this.#client.on('disconnect', ()=> this.#onDisconnect(client));    
@@ -37,6 +37,30 @@ module.exports = class EmitterMqttClient extends EventEmitter {
         this.#client.on('message',(topic, message)=> this.#onMessageReceived(topic, message.toString()));    
 
     };
+
+    sendDownStatusMessage(){
+        if (!this.#client) return;
+
+        this.#client.publish(
+            `emitterStatus/${this.clientId}`, 
+            '0',
+            {   retain: true,
+                qos: 1
+            }
+        );
+    }
+    
+    /**
+     * Fired when the client connects.
+     * @param {mqtt.MqttClient} client 
+     */
+     sendUpStatusMessage = function(client){
+        // register this client as 'up'.
+        client.publish(`emitterStatus/${this.clientId}`, '1', {
+            retain: true,
+            qos: 1
+        });
+    }
 
     send(val, callback){
         this.#client.publish(
@@ -59,7 +83,7 @@ module.exports = class EmitterMqttClient extends EventEmitter {
         if (topic == `commands/${this.clientId}`){
             console.log(`Command received: ${message}`);
             if (message == 'restart'){
-                this.#client.publish(`emitterStatus/${this.clientId}`, '0',{retain:true, qos:1});
+                this.sendDownStatusMessage();
                 this.#client.end();
                 this.#client = null;
                 this.emit('restart');    
@@ -67,17 +91,6 @@ module.exports = class EmitterMqttClient extends EventEmitter {
         }
     }
 
-    /**
-     * Fired when the client connects.
-     * @param {mqtt.MqttClient} client 
-     */
-    #onConnect = function(client){
-        // register this client as 'up'.
-        client.publish(`emitterStatus/${this.clientId}`, '1', {
-            retain: true,
-            qos: 1
-        });
-    }
 
     /**
      * Fired when the client is (not deliberately) disconnected.

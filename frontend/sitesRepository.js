@@ -33,15 +33,15 @@ class SitesRepository extends EventEmitter{
     };
 
     /**
-     * Fetch a collection of the current sites.
-     * @returns 
+     * Fetch a map of the current sites and whether they are online.
+     * @returns {Object.<string, boolean>}
      */
     get(){
         // return a clone so the repo can't be polluted.
         return _.clone(sites);
     }
 
-    /** Empty the repository */
+    /** Clear the repository */
     reset(){
         sites = {};
         return this.get();

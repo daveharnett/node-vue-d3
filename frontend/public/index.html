@@ -9,6 +9,8 @@
   <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
   <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
 
+
+
   <!-- Load polyfills to support older browsers -->
   <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
 
@@ -26,14 +28,31 @@
 
 <body>
   <div id="app">
-    {{ message }}
-  </div>
+    <h2>{{ message }}</h2>
 
-  <div id="my_dataviz"></div>
+    <table class="table">
+      <thead>
+        <th>Site Name</th>
+        <th>Online</th>
+        <th></th>
+      </thead>
+      <tbody>
+        <tr v-for="(isUp, name) in sites">
+          <td>{{name}}</td>
+          <td>
+            <b-icon-check-circle-fill v-if="isUp" variant="success"></b-icon-check-circle-fill>
+            <b-icon-x-circle-fill v-if="isUp !== true" variant="danger"></b-icon-x-circle-fill>
+          </td>
+          <td><button class="btn btn-danger" v-on:click="sendResetCommand(name)">Reset</button></td>
+        </tr>
+      </tbody>
+      
+    <div id="my_dataviz"></div>
 
 
 
 
+</div>
 
 
 
@@ -42,9 +61,16 @@
     var app = new Vue({
       el: '#app',
       data: {
-        message: 'Hello Vue!',
+        message: '',
+        sites:{},
         values: []
+      },
+      methods: {
+        sendResetCommand: function (siteName) {
+          socket.emit('resetCommand', siteName);
+        }
       }
+
     });
 
     function makeToast(message) {
@@ -59,6 +85,11 @@
       app.values.push(msg);
     });
 
+    socket.on('siteUpdate', function(msg){
+      for(var key in msg){
+        Vue.set(app.sites, msg.name, msg.isUp);
+      }
+    });
 
 
     // set the dimensions and margins of the graph
