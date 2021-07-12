@@ -47,12 +47,12 @@ or for debug, run:
  - Added frontend project.
  - Added mqtt client to frontend - subscribe to emitter values/statuses.
  - Added socket.io and event broker to frontend - passes values from mqtt to end-user websocket.
-
+ - Created a repository on the frontend server to store Emitter names/states, so users can get a comprehensive list on connect.
+ - Added vue.js element to display emitter names/states.
+ - Added vue.js restart button for each emitter.
+ - Added table to show incoming messages to browser client.
 
 # ToDo
- - Create a repository on the frontend server to store Emitter names/states, so users can get a comprehensive list on connect.
- - Add vue.js element to display emitter names/states.
- - Add vue.js restart button for each emitter.
  - Add d3.js time series chart to display emitter values.
  - Add toast/notification when an emitter goes offline.
  - Hoist docker compose file to k8s.

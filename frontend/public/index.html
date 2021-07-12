@@ -21,8 +21,17 @@
   <!-- Load the following for BootstrapVueIcons support -->
   <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
 
+  <!-- socket io -->
   <script src="/socket.io/socket.io.js"></script>
-  <script src="https://d3js.org/d3.v4.js"></script>
+  
+  <!-- d3 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.0.0/d3.js"></script>
+  <!-- <script src="https://d3js.org/d3.v4.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-time@3"></script> -->
+
+  <!-- underscore -->
+  <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
 
 </head>
 
@@ -47,6 +56,20 @@
         </tr>
       </tbody>
       
+      <table class="table">
+        <thead>
+          <th>Site Name</th>
+          <th>Time</th>
+          <th>Value</th>
+        </thead>
+        <tbody>
+          <tr v-for="(val) in values">
+            <td>{{val.site}}</td>
+            <td>{{val.time}}</td>
+            <td>{{val.value}}</td>
+          </tr>
+        </tbody>
+  
     <div id="my_dataviz"></div>
 
 
@@ -58,6 +81,10 @@
 
   <script>
     var socket = io();
+
+    var minDate;
+    var maxDate;
+
     var app = new Vue({
       el: '#app',
       data: {
@@ -73,15 +100,10 @@
 
     });
 
-    function makeToast(message) {
-      app.$bvToast.toast(message, {
-        title: 'BootstrapVue Toast',
-        autoHideDelay: 5000,
-        appendToast: false
-      });
-    }
 
     socket.on('valueReceived', function(msg) {
+      msg.time = new Date(msg.time);
+      msg.time_formatted = msg.time.getTime();// parseDate(msg.time);
       app.values.push(msg);
     });
 
@@ -92,14 +114,66 @@
     });
 
 
+    // D3
     // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 30, bottom: 30, left: 60},
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    // var margin = {top: 10, right: 30, bottom: 30, left: 60},
+    //     width = 460 - margin.left - margin.right,
+    //     height = 400 - margin.top - margin.bottom;
 
+    //var parseDate =  d3.time.format("%H:%M:%S")	
     
+    // var x = d3.scaleTime()
+    //     .domain([minDate, maxDate])
+    //     .range([0, width]);
+
+    // var y = d3.scaleLinear()
+    //     .range([height, 0]);
+
+    // var xAxis = d3.axisBottom(x);
+
+    // var yAxis = d3.axisLeft(y);
+
+    // var line = d3.line()
+    // .x(function(d) { return x(d.time_formatted); })
+    // .y(function(d) { return y(d.value); });
 
 
+
+
+
+    function refreshValueChart(){
+      // find date thresholds.
+      maxDate = new Date();
+      const TIME_WINDOW = 3 * 60 * 1000; /* ms */
+      const cutoff = maxDate.getTime()-TIME_WINDOW;
+      minDate = new Date(cutoff);
+
+      // remove values outside thresholds.
+      app.values = _.filter(app.values, v=>{
+        return v.time.getTime() > cutoff;
+      });
+
+
+    }
+
+    // var svg = d3.select("my_dataviz").append("svg")
+    //     .attr("width", width + margin.left + margin.right)
+    //     .attr("height", height + margin.top + margin.bottom)
+    //     .append("g")
+    //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    //     .data(values)
+    //     ;
+
+    // function makeToast(message) {
+    //   app.$bvToast.toast(message, {
+    //     title: 'BootstrapVue Toast',
+    //     autoHideDelay: 5000,
+    //     appendToast: false
+    //   });
+    // }
+
+
+    setInterval(refreshValueChart, 1000);
   </script>
   
   </body>
